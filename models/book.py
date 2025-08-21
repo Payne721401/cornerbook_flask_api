@@ -1,6 +1,7 @@
 # models/book.py
-from app import db
+from extensions import db
 from sqlalchemy.sql import func
+from sqlalchemy import Index, CheckConstraint
 
 class Book(db.Model):
     __tablename__ = 'books'
@@ -21,6 +22,14 @@ class Book(db.Model):
     # Relationships
     category = db.relationship('Category', back_populates='books')
     borrowings = db.relationship('Borrowing', back_populates='book', cascade="all, delete-orphan")
+
+    # Table arguments for indexes and constraints
+    __table_args__ = (
+        CheckConstraint('available_quantity >= 0 AND available_quantity <= total_quantity', name='chk_available_quantity'),
+        Index('idx_books_title', 'title'),
+        Index('idx_books_author', 'author'),
+        Index('idx_books_category_id', 'category_id'),
+    )
 
     def to_dict(self):
         """Converts the model to a dictionary, including category name."""

@@ -1,6 +1,6 @@
 # routes/categories.py
 from flask import Blueprint, request, jsonify
-from app import db
+from extensions import db
 from models.category import Category
 from routes.pydantic_models import CategoryCreate, CategoryUpdate
 from flask_pydantic import validate

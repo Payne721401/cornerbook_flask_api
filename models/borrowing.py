@@ -1,6 +1,7 @@
 # models/borrowing.py
-from app import db
+from extensions import db
 from sqlalchemy.sql import func
+from sqlalchemy import Index
 
 class Borrowing(db.Model):
     __tablename__ = 'borrowings'
@@ -16,6 +17,14 @@ class Borrowing(db.Model):
 
     # Relationships
     book = db.relationship('Book', back_populates='borrowings')
+
+    # Table arguments for indexes
+    __table_args__ = (
+        Index('idx_borrowings_book_id', 'book_id'),
+        Index('idx_borrowings_is_returned', 'is_returned'),
+        Index('idx_borrowings_borrower_room_number', 'borrower_room_number'),
+        Index('idx_borrowings_borrowed_at', 'borrowed_at'),
+    )
 
     def to_dict(self):
         """Converts the model to a dictionary."""

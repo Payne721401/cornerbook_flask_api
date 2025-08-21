@@ -1,5 +1,5 @@
 # services/book_service.py
-from app import db
+from extensions import db
 from models.book import Book
 from models.category import Category
 from sqlalchemy import or_

@@ -1,5 +1,5 @@
 # services/borrowing_service.py
-from app import db
+from extensions import db
 from models.book import Book
 from models.borrowing import Borrowing
 from datetime import datetime

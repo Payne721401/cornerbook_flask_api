@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 from services.borrowing_service import borrow_book_service, return_book_service
 from models.borrowing import Borrowing
-from app import db
+from extensions import db
 from routes.pydantic_models import BorrowBook
 from flask_pydantic import validate
 

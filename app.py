@@ -1,16 +1,13 @@
 # app.py
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from pydantic import ValidationError
+
+# Import extensions from the app package (__init__.py)
+from extensions import db, migrate
 
 from config import Config
 from logging_config import setup_logging # Import the setup function
 from utils.auth import api_key_auth # NEW: Import api_key_auth
-
-# Initialize extensions
-db = SQLAlchemy()
-migrate = Migrate()
 
 def create_app(config_class=Config):
     """
@@ -37,6 +34,9 @@ def create_app(config_class=Config):
             request.path,
             request.remote_addr
         )
+
+    # Import models here to avoid circular import at top level
+    from models import book, borrowing, category
 
     # Import and register blueprints
     from routes.books import books_bp

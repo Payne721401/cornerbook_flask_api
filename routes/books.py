@@ -1,6 +1,6 @@
 # routes/books.py
 from flask import Blueprint, request, jsonify
-from app import db
+from extensions import db
 from models.book import Book
 from models.category import Category
 from services.book_service import get_all_books_service
