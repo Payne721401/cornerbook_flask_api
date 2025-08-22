@@ -115,6 +115,7 @@ tests/
 
 # Local development scripts
 dev_server.py
+test_api.sh
 devserver.sh
 init_db.sh
 pytest.ini

@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 books_bp = Blueprint('books_bp', __name__)
 
-@books_bp.route('/', methods=['POST'])
+@books_bp.route('/', methods=['POST'], strict_slashes=False)
 @validate()
 def create_book(body: BookCreate):
     """Create a new book."""
@@ -36,7 +36,7 @@ def create_book(body: BookCreate):
         db.session.rollback()
         return jsonify({"error": "Failed to create book. ISBN might already exist or category_id is invalid."}), 409
 
-@books_bp.route('/', methods=['GET'])
+@books_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_books():
     """Get a list of books with optional filters and pagination."""
     filters = {

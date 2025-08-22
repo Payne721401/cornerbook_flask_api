@@ -7,7 +7,7 @@ from flask_pydantic import validate
 
 categories_bp = Blueprint('categories_bp', __name__)
 
-@categories_bp.route('/', methods=['POST'])
+@categories_bp.route('/', methods=['POST'], strict_slashes=False)
 @validate()
 def create_category(body: CategoryCreate):
     """Create a new category."""
@@ -19,7 +19,7 @@ def create_category(body: CategoryCreate):
     db.session.commit()
     return jsonify(new_category.to_dict()), 201
 
-@categories_bp.route('/', methods=['GET'])
+@categories_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_categories():
     """Get a list of all categories."""
     categories = db.session.query(Category).all()

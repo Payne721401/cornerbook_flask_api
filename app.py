@@ -1,6 +1,7 @@
 # app.py
 from flask import Flask, jsonify, request
 from pydantic import ValidationError
+from werkzeug.exceptions import BadRequest
 
 # Import extensions from the app package (__init__.py)
 from extensions import db, migrate
@@ -51,6 +52,15 @@ def create_app(config_class=Config):
     # --- API Key Authentication ---
     # Register the API key authentication function from utils/auth.py
     app.before_request(api_key_auth)
+
+    # NEW: Handle BadRequest for malformed JSON or other bad client requests
+    @app.errorhandler(BadRequest) # <--- 請從這裡開始新增整個區塊
+    def handle_bad_request(e):
+        """Handle 400 Bad Request errors, e.g., malformed JSON."""
+        app.logger.warning(
+            f"Bad Request: {e.description} from {request.remote_addr}"
+        )
+        return jsonify({"error": e.description}), 400
         
     # --- Global Error Handlers ---
     @app.errorhandler(ValidationError)

@@ -37,7 +37,7 @@ def return_book_endpoint(borrowing_id: int):
 
     return jsonify(borrowing_record.to_dict()), 200
 
-@borrowings_bp.route('/', methods=['GET'])
+@borrowings_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_borrowings():
     """Get a list of all borrowing records with optional filters and pagination."""
     query = db.session.query(Borrowing)
