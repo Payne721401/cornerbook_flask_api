@@ -160,6 +160,12 @@
   -d '{"name": "科幻小說"}' \
   https://cornerbook.inwave-studio.com/api/categories
   ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/categories
+  Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
+  Body: JSON.stringify({ name: '科幻小說' })
+  ```
 - **成功回應 (201)**: `{"id": 1, "name": "科幻小說"}`
 
 #### **2. 取得所有分類**
@@ -169,6 +175,12 @@
 - **`curl` 範例**: (無需 API 金鑰)
   ```bash
   curl https://cornerbook.inwave-studio.com/api/categories
+  ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  URL: ${BASE_URL}/categories
+  Headers: {}
+  Body: (無)
   ```
 - **成功回應 (200)**: `[{"id": 1, "name": "科幻小說"}, {"id": 2, "name": "經典文學"}]`
 
@@ -180,6 +192,12 @@
 - **`curl` 範例** (ID 為 1 的分類): (無需 API 金鑰)
   ```bash
   curl https://cornerbook.inwave-studio.com/api/categories/1
+  ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  URL: ${BASE_URL}/categories/1
+  Headers: {}
+  Body: (無)
   ```
 - **成功回應 (200)**: `{"id": 1, "name": "科幻小說"}`
 
@@ -198,6 +216,12 @@
   -d '{"name": "奇幻小說"}' \
   https://cornerbook.inwave-studio.com/api/categories/1
   ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/categories/1
+  Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
+  Body: JSON.stringify({ name: '奇幻小說' })
+  ```
 - **成功回應 (200)**: `{"id": 1, "name": "奇幻小說"}`
 
 #### **5. 刪除分類**
@@ -209,6 +233,12 @@
   ```bash
   curl -X DELETE -H "Api-Key: YOUR_API_KEY" \
   https://cornerbook.inwave-studio.com/api/categories/1
+  ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/categories/1
+  Headers: { 'Api-Key': API_KEY }
+  Body: (無)
   ```
 - **成功回應 (204)**: 無內容。
 
@@ -234,6 +264,12 @@
   -d '{"title": "沙丘", "author": "法蘭克·赫伯特", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1}' \
   https://cornerbook.inwave-studio.com/api/books
   ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/books
+  Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
+  Body: JSON.stringify({ title: '沙丘', author: '法蘭克·赫伯特', isbn: '9780441013593', total_quantity: 5, category_id: 1, image_url: 'http://example.com/dune.jpg' })
+  ```
 - **成功回應 (201)**: 完整的書籍物件。
 
 #### **2. 取得帶篩選條件的書籍列表**
@@ -255,6 +291,23 @@
 
   # 取得所有書籍，不進行分頁
   curl "https://cornerbook.inwave-studio.com/api/books?per_page=0"
+  ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  // 取得所有書籍 (使用預設值分頁)
+  URL: ${BASE_URL}/books
+  Headers: {}
+  Body: (無)
+
+  // 取得第 2 頁書籍，每頁 10 本
+  URL: ${BASE_URL}/books?page=2&per_page=10
+  Headers: {}
+  Body: (無)
+
+  // 取得所有書籍，不進行分頁
+  URL: ${BASE_URL}/books?per_page=0
+  Headers: {}
+  Body: (無)
   ```
 - **成功回應 (200)**:
   ```json
@@ -295,6 +348,12 @@
   ```bash
   curl https://cornerbook.inwave-studio.com/api/books/1
   ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  URL: ${BASE_URL}/books/1
+  Headers: {}
+  Body: (無)
+  ```
 - **成功回應 (200)**: `{"book": {...}}`
 
 #### **4. 更新書籍 (部分更新)**
@@ -317,6 +376,12 @@
   -d '{"total_quantity": 6}' \
   https://cornerbook.inwave-studio.com/api/books/1
   ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/books/1
+  Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
+  Body: JSON.stringify({ total_quantity: 6, image_url: 'http://new-url.com/dune.jpg' })
+  ```
 - **成功回應 (200)**: 更新後的書籍物件。
 
 #### **5. 刪除書籍**
@@ -328,6 +393,12 @@
   ```bash
   curl -X DELETE -H "Api-Key: YOUR_API_KEY" \
   https://cornerbook.inwave-studio.com/api/books/1
+  ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/books/1
+  Headers: { 'Api-Key': API_KEY }
+  Body: (無)
   ```
 - **成功回應 (204)**: 無內容。
 
@@ -351,6 +422,12 @@
   -d '{"book_id": 1, "borrower_name": "王小明", "borrower_room_number": "101", "borrower_hotel": "君悅飯店"}' \
   https://cornerbook.inwave-studio.com/api/borrowings/borrow
   ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/borrowings/borrow
+  Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
+  Body: JSON.stringify({ book_id: 1, borrower_name: '王小明', borrower_room_number: '101', borrower_hotel: '君悅飯店' })
+  ```
 - **成功回應 (201)**: 新的借閱紀錄物件。
 
 #### **2. 還書**
@@ -362,6 +439,12 @@
   ```bash
   curl -X PATCH -H "Api-Key: YOUR_API_KEY" \
   https://cornerbook.inwave-studio.com/api/borrowings/return/1 
+  ```
+- **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
+  ```
+  URL: ${BASE_URL}/borrowings/return/1
+  Headers: { 'Api-Key': API_KEY }
+  Body: (無)
   ```
 - **成功回應 (200)**: 更新後的借閱紀錄物件。
 
@@ -382,6 +465,23 @@
 
   # 取得所有借閱紀錄，不進行分頁
   curl "https://cornerbook.inwave-studio.com/api/borrowings?per_page=0"
+  ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  // 取得所有借閱紀錄 (使用預設值分頁)
+  URL: ${BASE_URL}/borrowings
+  Headers: {}
+  Body: (無)
+
+  // 取得所有尚未歸還的書籍紀錄，第 1 頁，每頁 5 筆
+  URL: ${BASE_URL}/borrowings?is_returned=false&page=1&per_page=5
+  Headers: {}
+  Body: (無)
+
+  // 取得所有借閱紀錄，不進行分頁
+  URL: ${BASE_URL}/borrowings?per_page=0
+  Headers: {}
+  Body: (無)
   ```
 - **成功回應 (200)**:
   ```json
@@ -419,6 +519,12 @@
 - **`curl` 範例** (ID 為 1 的借閱紀錄): (無需 API 金鑰)
   ```bash
   curl https://cornerbook.inwave-studio.com/api/borrowings/1
+  ```
+- **前端 (JavaScript fetch) 範例**: (無需 API 金鑰)
+  ```
+  URL: ${BASE_URL}/borrowings/1
+  Headers: {}
+  Body: (無)
   ```
 - **成功回應 (200)**: `{...}` (借閱紀錄物件)
 
