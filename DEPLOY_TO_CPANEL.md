@@ -369,7 +369,7 @@
   - `category_id` (整數): 新的分類 ID。
   - `image_url` (字串): 新的圖片 URL。
 - **請求主體範例**: `{"total_quantity": 6, "image_url": "http://new-url.com/dune.jpg"}`
-- **`curl` 範例** (更新 ID 為 1 的書籍): (需要 API 金鑰)
+- **`curl` 範例**: (需要 API 金鑰)
   ```bash
   curl -X PATCH -H "Content-Type: application/json" \
   -H "Api-Key: YOUR_API_KEY" \
@@ -389,7 +389,7 @@
 - **說明**: 根據 ID 刪除書籍。如果書籍有活躍借閱紀錄，則刪除失敗。
 - **路徑參數**:
   - `id` (整數, 必要): 要刪除的書籍的唯一識別碼。
-- **`curl` 範例** (刪除 ID 為 1 的書籍): (需要 API 金鑰)
+- **`curl` 範例**: (需要 API 金鑰)
   ```bash
   curl -X DELETE -H "Api-Key: YOUR_API_KEY" \
   https://cornerbook.inwave-studio.com/api/books/1
@@ -412,21 +412,23 @@
 - **請求主體**:
   - `book_id` (整數, 必要): 要借閱的書籍 ID。
   - `borrower_name` (字串, 必要): 借書人的姓名。
+  - `borrower_email` (字串, 可選): 借書人的電子郵件地址。
+  - `borrower_phone` (字串, 可選): 借書人的手機號碼（若提供，長度需介於 1 到 20 個字元）。
   - `borrower_room_number` (字串, 必要): 借書人的飯店房號。
   - `borrower_hotel` (字串, 必要): 飯店名稱。
-- **請求主體範例**: `{"book_id": 1, "borrower_name": "王小明", "borrower_room_number": "101", "borrower_hotel": "君悅飯店"}`
+- **請求主體範例**: `{"book_id": 1, "borrower_name": "王小明", "borrower_email": "xiaoming.wang@example.com", "borrower_phone": "0912345678", "borrower_room_number": "101", "borrower_hotel": "君悅飯店"}`
 - **`curl` 範例**: (需要 API 金鑰)
   ```bash
   curl -X POST -H "Content-Type: application/json" \
   -H "Api-Key: YOUR_API_KEY" \
-  -d '{"book_id": 1, "borrower_name": "王小明", "borrower_room_number": "101", "borrower_hotel": "君悅飯店"}' \
+  -d '{"book_id": 1, "borrower_name": "王小明", "borrower_email": "xiaoming.wang@example.com", "borrower_phone": "0912345678", "borrower_room_number": "101", "borrower_hotel": "君悅飯店"}' \
   https://cornerbook.inwave-studio.com/api/borrowings/borrow
   ```
 - **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
   ```
   URL: ${BASE_URL}/borrowings/borrow
   Headers: { 'Content-Type': 'application/json', 'Api-Key': API_KEY }
-  Body: JSON.stringify({ book_id: 1, borrower_name: '王小明', borrower_room_number: '101', borrower_hotel: '君悅飯店' })
+  Body: JSON.stringify({ book_id: 1, borrower_name: '王小明', borrower_email: 'xiaoming.wang@example.com', borrower_phone: '0912345678', borrower_room_number: '101', borrower_hotel: '君悅飯店' })
   ```
 - **成功回應 (201)**: 新的借閱紀錄物件。
 
@@ -443,7 +445,7 @@
 - **前端 (JavaScript fetch) 範例**: (需要 API 金鑰)
   ```
   URL: ${BASE_URL}/borrowings/return/1
-  Headers: { 'Api-Key': API_KEY }
+  Headers: { 'Api-Type': 'application/json', 'Api-Key': API_KEY }
   Body: (無)
   ```
 - **成功回應 (200)**: 更新後的借閱紀錄物件。
@@ -452,6 +454,7 @@
 - **端點**: `GET /api/borrowings`
 - **說明**: 檢索借閱紀錄列表，可選篩選和分頁條件。
 - **查詢參數**:
+  - `search` (字串, 可選): 根據借閱人姓名、電子郵件、電話、飯店名稱或書名進行模糊搜尋。
   - `is_returned` (布林值, 可選): 設為 `false` 可取得所有目前已借出（活躍）的紀錄。設為 `true` 可取得所有已歸還的紀錄。若省略，則回傳所有紀錄。
   - `page` (整數, 可選): 分頁頁碼，預設為 1。
   - `per_page` (整數, 可選): 每頁顯示的項目數，預設為 50。設為 `0` 可取得所有項目，不進行分頁。
@@ -462,6 +465,9 @@
 
   # 取得所有尚未歸還的書籍紀錄，第 1 頁，每頁 5 筆
   curl "https://cornerbook.inwave-studio.com/api/borrowings?is_returned=false&page=1&per_page=5"
+
+  # 根據借閱人姓名模糊搜尋
+  curl "https://cornerbook.inwave-studio.com/api/borrowings?search=王小明"
 
   # 取得所有借閱紀錄，不進行分頁
   curl "https://cornerbook.inwave-studio.com/api/borrowings?per_page=0"
@@ -478,6 +484,11 @@
   Headers: {}
   Body: (無)
 
+  // 根據借閱人姓名模糊搜尋
+  URL: ${BASE_URL}/borrowings?search=王小明
+  Headers: {}
+  Body: (無)
+
   // 取得所有借閱紀錄，不進行分頁
   URL: ${BASE_URL}/borrowings?per_page=0
   Headers: {}
@@ -490,7 +501,10 @@
       {
         "id": 1,
         "book_id": 1,
+        "book_title": "沙丘",
         "borrower_name": "王小明",
+        "borrower_email": "xiaoming.wang@example.com",
+        "borrower_phone": "0912345678",
         "borrower_room_number": "101",
         "borrower_hotel": "君悅飯店",
         "borrowed_at": "2023-01-05T15:30:00Z",
