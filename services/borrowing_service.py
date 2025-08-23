@@ -28,6 +28,8 @@ def borrow_book_service(data):
         new_borrowing = Borrowing(
             book_id=book.id,
             borrower_name=data.get('borrower_name'),
+            borrower_email=data.get('borrower_email'),
+            borrower_phone=data.get('borrower_phone'),
             borrower_room_number=data.get('borrower_room_number'),
             borrower_hotel=data.get('borrower_hotel')
         )

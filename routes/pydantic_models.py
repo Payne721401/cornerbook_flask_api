@@ -1,5 +1,5 @@
 # routes/pydantic_models.py
-from pydantic import BaseModel, constr, conint
+from pydantic import BaseModel, constr, conint, EmailStr
 from typing import Optional
 
 # --- Category Models ---
@@ -38,6 +38,8 @@ class BookUpdate(BaseModel):
 class BorrowBook(BaseModel):
     book_id: int
     borrower_name: constr(min_length=1, max_length=255)
+    borrower_email: EmailStr # Use EmailStr for basic email validation
+    borrower_phone: constr(min_length=8, max_length=20)
     borrower_room_number: constr(min_length=1, max_length=10)
     borrower_hotel: constr(min_length=1, max_length=255)
 

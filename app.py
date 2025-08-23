@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask, jsonify, request
 from pydantic import ValidationError
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, MethodNotAllowed
 
 # Import extensions from the app package (__init__.py)
 from extensions import db, migrate
@@ -61,6 +61,14 @@ def create_app(config_class=Config):
             f"Bad Request: {e.description} from {request.remote_addr}"
         )
         return jsonify({"error": e.description}), 400
+
+    @app.errorhandler(MethodNotAllowed) # <--- 新增這整個區塊
+    def handle_method_not_allowed(e):
+        """Handle 405 Method Not Allowed errors."""
+        app.logger.warning(
+            f"Method Not Allowed: {request.method} for {request.path} from {request.remote_addr}"
+        )
+        return jsonify({"error": "The method is not allowed for the requested URL."}), 405
         
     # --- Global Error Handlers ---
     @app.errorhandler(ValidationError)

@@ -85,6 +85,26 @@ def update_book(id, body: BookUpdate):
 
     update_data = body.model_dump(exclude_unset=True)
 
+    if 'total_quantity' in update_data:
+        new_total_quantity = update_data['total_quantity']
+        
+        borrowed_count = book.total_quantity - book.available_quantity
+
+        # 新的總數不能少於已被借出的數量
+        if new_total_quantity < borrowed_count:
+            return jsonify({
+                "error": f"Cannot reduce total quantity to {new_total_quantity}. "
+                         f"There are currently {borrowed_count} books on loan."
+            }), 409
+
+        # 計算數量差異，並應用到可借閱數量上
+        quantity_diff = new_total_quantity - book.total_quantity
+        book.available_quantity += quantity_diff
+        book.total_quantity = new_total_quantity
+        
+        # 從 update_data 中移除 total_quantity，避免被下方的通用邏輯重複設定
+        del update_data['total_quantity']
+
     try:
         for key, value in update_data.items():
             setattr(book, key, value)

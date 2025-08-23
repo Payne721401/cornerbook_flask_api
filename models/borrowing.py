@@ -9,6 +9,8 @@ class Borrowing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='RESTRICT'), nullable=False)
     borrower_name = db.Column(db.String(255), nullable=False)
+    borrower_email = db.Column(db.String(255), nullable=True)
+    borrower_phone = db.Column(db.String(20), nullable=True)
     borrower_room_number = db.Column(db.String(10), nullable=False)
     borrower_hotel = db.Column(db.String(255), nullable=False)
     borrowed_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
@@ -33,6 +35,8 @@ class Borrowing(db.Model):
             "book_id": self.book_id,
             "book_title": self.book.title if self.book else None,
             "borrower_name": self.borrower_name,
+            "borrower_email": self.borrower_email,
+            "borrower_phone": self.borrower_phone,
             "borrower_room_number": self.borrower_room_number,
             "borrower_hotel": self.borrower_hotel,
             "borrowed_at": self.borrowed_at.isoformat(),

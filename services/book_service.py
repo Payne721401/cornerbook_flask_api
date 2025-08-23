@@ -14,7 +14,11 @@ def get_all_books_service(filters, page=1, per_page=50):
     if filters.get('search'):
         search_term = f"%{filters['search']}%"
         query = query.filter(
-            or_(Book.title.ilike(search_term), Book.author.ilike(search_term))
+            or_(
+                Book.title.ilike(search_term), 
+                Book.author.ilike(search_term),
+                Book.isbn.ilike(search_term)
+            )
         )
 
     if filters.get('category'):
