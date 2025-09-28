@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.category import Category
+from models.book import Book
 from routes.pydantic_models import CategoryCreate, CategoryUpdate
 from flask_pydantic import validate
 
@@ -51,11 +52,18 @@ def update_category(id, body: CategoryUpdate):
 
 @categories_bp.route('/<int:id>', methods=['DELETE'])
 def delete_category(id):
-    """Delete a category."""
+    """Delete a category, but only if it's not in use."""
     category = db.session.get(Category, id) # UPDATED
     if not category:
         return jsonify({"error": "Category not found"}), 404
     
+    # Check if the category is in use by any books
+    is_in_use = db.session.query(Book.id).filter_by(category_id=id).first()
+    if is_in_use:
+        return jsonify({
+            "error": "Cannot delete category. It is currently in use by one or more books."
+        }), 409 # 409 Conflict is an appropriate status code
+
     db.session.delete(category)
     db.session.commit()
     return '', 204
