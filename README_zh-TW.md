@@ -169,25 +169,61 @@ pytest -v
 
 ### **書籍管理 (`/api/books`)**
 
-#### **1. 新增書籍**
+#### **1. 新增書籍 (批次操作)**
 - **端點**: `POST /api/books`
-- **說明**: 新增一本新書到庫存。
-- **請求主體**:
-  - `title` (字串, 必要): 書籍的標題。
-  - `author` (字串, 必要): 書籍的作者。
-  - `isbn` (字串, 必要): 書籍的 ISBN，必須是唯一的。
-  - `total_quantity` (整數, 必要): 這本書的總副本數。
-  - `category_id` (整數, 必要): 這本書所屬分類的 ID。
-  - `image_url` (字串, 可選): 書籍封面的圖片 URL。
-- **請求主體範例**: `{"title": "沙丘", "author": "法蘭克·赫伯特", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1, "image_url": "http://example.com/dune.jpg"}`
+- **說明**: 在單一請求中新增一本或多本書籍到庫存中。
+- **請求主體**: 請求主體必須是一個包含 `"books"` 鍵的 JSON 物件。該鍵的值必須是一個包含一個或多個書籍物件的列表。
+  - `books` (列表, 必要): 一個包含待建立書籍物件的列表。
+    - `title` (字串, 必要): 書籍的標題。
+    - `author` (字串, 必要): 書籍的作者。
+    - `isbn` (字串, 必要): 書籍的 ISBN，在資料庫中和請求本身的所有書籍中都必須是唯一的。
+    - `total_quantity` (整數, 必要): 這本書的總副本數。
+    - `category_id` (整數, 必要): 這本書所屬分類的 ID。
+    - `image_url` (字串, 可選): 書籍封面的圖片 URL。
+- **請求主體範例 (新增單本書籍)**:
+  ```json
+  {
+    "books": [
+      {
+        "title": "沙丘",
+        "author": "法蘭克·赫伯特",
+        "isbn": "9780441013593",
+        "total_quantity": 5,
+        "category_id": 1,
+        "image_url": "http://example.com/dune.jpg"
+      }
+    ]
+  }
+  ```
+- **請求主體範例 (新增多本書籍)**:
+  ```json
+  {
+    "books": [
+      {
+        "title": "沙丘",
+        "author": "法蘭克·赫伯特",
+        "isbn": "9780441013593",
+        "total_quantity": 5,
+        "category_id": 1
+      },
+      {
+        "title": "基地",
+        "author": "以薩·艾西莫夫",
+        "isbn": "9780553803716",
+        "total_quantity": 3,
+        "category_id": 1
+      }
+    ]
+  }
+  ```
 - **`curl` 範例**: (需要 API 金鑰)
   ```bash
   curl -X POST -H "Content-Type: application/json" \
   -H "Api-Key: YOUR_API_KEY" \
-  -d '{"title": "沙丘", "author": "法蘭克·赫伯特", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1}' \
+  -d '{"books": [{"title": "沙丘", "author": "法蘭克·赫伯特", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1}]}' \
   http://127.0.0.1:5001/api/books
   ```
-- **成功回應 (201)**: 完整的書籍物件。
+- **成功回應 (201)**: 一個包含新建立書籍物件的列表。
 
 #### 2. 取得帶篩選條件的書籍列表
 - **端點**: `GET /api/books`

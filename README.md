@@ -163,35 +163,61 @@ Logging is configured via `config.py` and initialized in `app.py`. In non-debug 
 
 ### **Book Management (`/api/books`)**
 
-#### **1. Add a new book**
+#### **1. Add new books (Batch operation)**
 - **Endpoint**: `POST /api/books`
-- **Description**: Adds a new book to the inventory.
-- **Request Body**:
-  - `title` (string, required): The title of the book.
-  - `author` (string, required): The author of the book.
-  - `isbn` (string, required): The ISBN of the book. Must be unique.
-  - `total_quantity` (integer, required): The total number of copies of this book.
-  - `category_id` (integer, required): The ID of the category this book belongs to.
-  - `image_url` (string, optional): A URL for the book's cover image.
-- **Body Example**:
+- **Description**: Adds one or more new books to the inventory in a single request.
+- **Request Body**: The request body must be a JSON object with a single key `"books"`. The value of this key must be a list containing one or more book objects.
+  - `books` (list, required): A list of book objects to be created.
+    - `title` (string, required): The title of the book.
+    - `author` (string, required): The author of the book.
+    - `isbn` (string, required): The ISBN of the book. Must be unique across all books in the database and within the request itself.
+    - `total_quantity` (integer, required): The total number of copies of this book.
+    - `category_id` (integer, required): The ID of the category this book belongs to.
+    - `image_url` (string, optional): A URL for the book's cover image.
+- **Body Example (Adding a single book)**:
   ```json
   {
-    "title": "Dune",
-    "author": "Frank Herbert",
-    "isbn": "9780441013593",
-    "total_quantity": 5,
-    "category_id": 1,
-    "image_url": "http://example.com/dune.jpg"
+    "books": [
+      {
+        "title": "Dune",
+        "author": "Frank Herbert",
+        "isbn": "9780441013593",
+        "total_quantity": 5,
+        "category_id": 1,
+        "image_url": "http://example.com/dune.jpg"
+      }
+    ]
+  }
+  ```
+- **Body Example (Adding multiple books)**:
+  ```json
+  {
+    "books": [
+      {
+        "title": "Dune",
+        "author": "Frank Herbert",
+        "isbn": "9780441013593",
+        "total_quantity": 5,
+        "category_id": 1
+      },
+      {
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "isbn": "9780553803716",
+        "total_quantity": 3,
+        "category_id": 1
+      }
+    ]
   }
   ```
 - **`curl` Example**:
   ```bash
   curl -X POST -H "Content-Type: application/json" \
   -H "Api-Key: YOUR_API_KEY" \
-  -d '{"title": "Dune", "author": "Frank Herbert", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1}' \
+  -d '{"books": [{"title": "Dune", "author": "Frank Herbert", "isbn": "9780441013593", "total_quantity": 5, "category_id": 1}]}' \
   http://127.0.0.1:5001/api/books
   ```
-- **Success Response (201)**: The full book object.
+- **Success Response (201)**: A list of the newly created book objects.
 
 #### 2. Get books with filtering
 - **Endpoint**: `GET /api/books`

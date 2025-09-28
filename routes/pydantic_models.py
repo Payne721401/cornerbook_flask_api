@@ -1,6 +1,6 @@
 # routes/pydantic_models.py
-from pydantic import BaseModel, constr, conint, EmailStr
-from typing import Optional
+from pydantic import BaseModel, constr, conint, EmailStr, Field
+from typing import Optional, List
 
 # --- Category Models ---
 class CategoryBase(BaseModel):
@@ -24,6 +24,9 @@ class BookBase(BaseModel):
 class BookCreate(BookBase):
     pass
 
+class BookCreateList(BaseModel):
+    books: List[BookCreate] = Field(..., min_length=1)
+
 class BookUpdate(BaseModel):
     title: Optional[constr(min_length=1, max_length=255)] = None
     author: Optional[constr(min_length=1, max_length=255)] = None
@@ -39,7 +42,7 @@ class BorrowBook(BaseModel):
     book_id: int
     borrower_name: constr(min_length=1, max_length=255)
     borrower_email: Optional[EmailStr] = None
-    borrower_phone: Optional[constr(min_length=1, max_length=20)] = None # <--- 修改為可選，且 min_length 調整為 1 (如果提供)
+    borrower_phone: Optional[constr(min_length=1, max_length=20)] = None
     borrower_room_number: constr(min_length=1, max_length=10)
     borrower_hotel: constr(min_length=1, max_length=255)
 

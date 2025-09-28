@@ -4,7 +4,7 @@ from extensions import db
 from models.book import Book
 from models.category import Category
 from services.book_service import get_all_books_service
-from routes.pydantic_models import BookCreate, BookUpdate
+from routes.pydantic_models import BookCreateList, BookUpdate # MODIFIED: Import BookCreateList
 from flask_pydantic import validate
 from sqlalchemy.exc import IntegrityError
 
@@ -12,29 +12,59 @@ books_bp = Blueprint('books_bp', __name__)
 
 @books_bp.route('/', methods=['POST'], strict_slashes=False)
 @validate()
-def create_book(body: BookCreate):
-    """Create a new book."""
+def create_book(body: BookCreateList): # MODIFIED: Expect a list of books
+    """Create one or more new books in a batch."""
+    books_to_create = body.books
 
-    category = db.session.get(Category, body.category_id)
-    if not category:
-        return jsonify({"error": f"Category with id {body.category_id} not found."}), 404
+    # --- Validation Step 1: Check for duplicate ISBNs within the request itself ---
+    seen_isbns = set()
+    for book_data in books_to_create:
+        if book_data.isbn in seen_isbns:
+            return jsonify({"error": f"Duplicate ISBN {book_data.isbn} found in request."}), 409
+        seen_isbns.add(book_data.isbn)
 
+    # --- Validation Step 2: Check for conflicts with the database (efficiently) ---
+    all_req_isbns = {book.isbn for book in books_to_create}
+    all_req_category_ids = {book.category_id for book in books_to_create}
+
+    # Check if any ISBNs already exist in the database
+    existing_isbn_query = db.session.query(Book.isbn).filter(Book.isbn.in_(all_req_isbns)).first()
+    if existing_isbn_query:
+        return jsonify({"error": f"ISBN {existing_isbn_query[0]} already exists."}), 409
+
+    # Check if all category IDs exist
+    found_categories_count = db.session.query(Category.id).filter(Category.id.in_(all_req_category_ids)).count()
+    if found_categories_count != len(all_req_category_ids):
+        # For a better error message, find which category is missing
+        found_ids = {c[0] for c in db.session.query(Category.id).filter(Category.id.in_(all_req_category_ids)).all()}
+        missing_id = all_req_category_ids.difference(found_ids).pop()
+        return jsonify({"error": f"Category with id {missing_id} not found."}), 404
+
+    # --- Creation Step ---
     try:
-        new_book = Book(
-            title=body.title,
-            author=body.author,
-            isbn=body.isbn,
-            total_quantity=body.total_quantity,
-            available_quantity=body.total_quantity,
-            category_id=body.category_id,
-            image_url=body.image_url
-        )
-        db.session.add(new_book)
+        new_books = []
+        for book_data in books_to_create:
+            new_book = Book(
+                title=book_data.title,
+                author=book_data.author,
+                isbn=book_data.isbn,
+                total_quantity=book_data.total_quantity,
+                available_quantity=book_data.total_quantity,  # available starts as total
+                category_id=book_data.category_id,
+                image_url=book_data.image_url
+            )
+            new_books.append(new_book)
+        
+        db.session.add_all(new_books)
         db.session.commit()
-        return jsonify(new_book.to_dict()), 201
-    except IntegrityError:
+        
+        # Return the list of created books
+        return jsonify([book.to_dict() for book in new_books]), 201
+
+    except IntegrityError: # This is a fallback, validations should catch most issues
         db.session.rollback()
-        return jsonify({"error": "Failed to create book. ISBN might already exist or category_id is invalid."}), 409
+        # A general error in case the pre-flight checks missed something (e.g., a race condition)
+        return jsonify({"error": "An unexpected database integrity error occurred during book creation."}), 409
 
 @books_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_books():
