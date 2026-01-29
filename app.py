@@ -5,6 +5,7 @@ from werkzeug.exceptions import BadRequest, MethodNotAllowed
 
 # Import extensions from the app package (__init__.py)
 from extensions import db, migrate
+from flask_cors import CORS
 
 from config import Config
 from logging_config import setup_logging # Import the setup function
@@ -16,6 +17,9 @@ def create_app(config_class=Config):
     """
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # NEW: Initialize CORS to allow cross-origin requests for all API routes
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # --- Setup Logging ---
     # This should be one of the first things to configure
