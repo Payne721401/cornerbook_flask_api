@@ -54,11 +54,10 @@ def create_app(config_class=Config):
     app.register_blueprint(borrowings_bp, url_prefix='/api/borrowings')
 
     # --- API Key Authentication ---
-    # Register the API key authentication function from utils/auth.py
     app.before_request(api_key_auth)
 
     # NEW: Handle BadRequest for malformed JSON or other bad client requests
-    @app.errorhandler(BadRequest) # <--- 請從這裡開始新增整個區塊
+    @app.errorhandler(BadRequest) 
     def handle_bad_request(e):
         """Handle 400 Bad Request errors, e.g., malformed JSON."""
         app.logger.warning(
@@ -66,7 +65,7 @@ def create_app(config_class=Config):
         )
         return jsonify({"error": e.description}), 400
 
-    @app.errorhandler(MethodNotAllowed) # <--- 新增這整個區塊
+    @app.errorhandler(MethodNotAllowed) 
     def handle_method_not_allowed(e):
         """Handle 405 Method Not Allowed errors."""
         app.logger.warning(
